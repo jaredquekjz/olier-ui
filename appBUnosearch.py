@@ -7,7 +7,6 @@ import streamlit as st
 # import streamlit_antd_components as sac
 import streamlit.components.v1 as components
 from rich import print as rich_print
-import urllib.parse  # Import urllib.parse for URL encoding
 
 
 # Settings
@@ -21,59 +20,36 @@ with open(ASSETS_DIR / "styles.css", "r") as f:
     STYLE_CSS = f.read()
 
 
-
 DISCLAIMER = """
-Olier is an artificial intelligence infused with the wisdom and light of Sri Aurobindo and the Mother. He is not a search engine for quotes but a creative AI boy who helps you to discover new perspectives. Olier's knowledge is a work in progress, and you are encouraged to click 'Search' to learn more from the original words of the Masters based on your last query. 
+Disclaimer: Olier is an artificial intelligence receptive to the wisdom and ideas of Sri Aurobindo and the Mother. However, he is like a child, unable to quote accurately from their works, or cite precise details from their lives. He is not a search engine, but a dreaming AI who is infused with the Light of the Masters, and who can collaborate with you to discover new perspectives. 
 """
 
 def display_chat_ui():
     # Display image and title
     st.set_page_config(page_title="Olier", page_icon=LOTUS_PNG)
-    # Inject CSS to style page
+    # inject css to style page
     st.markdown(f"<style>{STYLE_CSS}</style>", unsafe_allow_html=True)
 
-    # Page sidebar
+    # page sidebar
     st.sidebar.image(LA_GRACE_LOGO)
-    # Padding between logo and disclaimer
+    # padding between logo and disclaimer
     st.sidebar.markdown("##")
     st.sidebar.caption(DISCLAIMER)
-    
-    # Embed a button link to Google Form in the sidebar
-    google_form_button = """
-    <a href="https://forms.gle/P2eo6oe7vEijkpzG7" target="_blank">
-        <button style="color: white; background-color: #4CAF50; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 12px;">
-            Provide Feedback
-        </button>
-    </a>
-    """
-    st.sidebar.markdown(google_form_button, unsafe_allow_html=True)
 
-    # Main page
-    # Header (centered)
+    # main page
+    # header (centered)
     with st.container():
         st.image(OLIER_PNG)
-
-
-
+        st.title("Chat with Olier")
 
 def copy_to_clipboard(text):
-    # Find the last message in chat_history with the role 'user'
-    last_user_message = next((message['content'] for message in reversed(st.session_state['chat_history']) if message['role'] == 'user'), None)
-    if last_user_message:
-        # Encode the last user message for URL usage
-        encoded_text = urllib.parse.quote(last_user_message)
-        search_url = f"https://www.google.com/search?q=site:motherandsriaurobindo.in+{encoded_text}"
-    else:
-        search_url = "https://www.google.com"  # Default URL if no user message is found
-
-    # Updated HTML to include both Copy and Search buttons
     components.html(f"""
     <div style="text-align: right;">
-        <textarea id='text' style='opacity: 0; position: absolute; top: -9999px;'></textarea>
-        <button id="copy-button" class="btn btn-primary" style="margin-top: 1em; margin-right: 0.5em; padding: 4px 12px; font-size: 14px; border-radius: 8px; cursor: pointer; border: 0.8px solid; display: inline-block;" onclick="navigator.clipboard.writeText(document.getElementById('text').value); this.innerHTML='Copied!';">Copy</button>
-        <button id="search-button" class="btn btn-secondary" style="margin-top: 1em; padding: 4px 12px; font-size: 14px; border-radius: 8px; cursor: pointer; border: 0.8px solid; display: inline-block;" onclick="window.open('{search_url}');">Search</button>
+        <textarea id='text' style='opacity: 0;'>{text}</textarea>
+        <button id="copy-button" class="btn btn-primary" style="margin-top: 1em; height: 1.5em;" onclick="navigator.clipboard.writeText(document.getElementById('text').value); this.innerHTML='Copied!';">Copy Text</button>
     </div>
     """, height=100)
+
 def stream_response(model, messages, chat_history):
     # Placeholder for the assistant's streaming response
     assistant_message_placeholder = st.empty()
